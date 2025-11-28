@@ -1,0 +1,90 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 1. EL CATÁLOGO (Tus productos definidos)
+// Aquí se acumula el stock total 
+model Producto {
+  id          String   @id @default(uuid())
+  nombre      String   
+  descripcion String?
+  
+  // Precios
+  precioVenta Decimal  @db.Decimal(10, 2)
+  
+  // Stock Global 
+  stock       Int      @default(0) 
+
+  // Relaciones
+  entradas    PrendaPaca[]   
+  salidas     DetalleVenta[] 
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// 2. LA PACA 
+model Paca {
+  id          String   @id @default(uuid())
+  nombre      String   // Ej: "Paca Mixta Noviembre"
+  costoTotal  Decimal  @db.Decimal(10, 2)
+  fechaCompra DateTime @default(now())
+
+  contenido   PrendaPaca[]
+
+  createdAt   DateTime @default(now())
+}
+
+// 3. TABLA INTERMEDIA (Ingreso de inventario)
+model PrendaPaca {
+  id          String   @id @default(uuid())
+  
+  // Relaciones
+  pacaId      String
+  paca        Paca     @relation(fields: [pacaId], references: [id])
+
+  productoId  String
+  producto    Producto @relation(fields: [productoId], references: [id])
+
+  // Datos del ingreso
+  cantidad    Int      
+  costoUnitarioEstimado Decimal? @db.Decimal(10, 2) 
+
+  createdAt   DateTime @default(now())
+}
+
+// 4. VENTAS (Salida de inventario)
+model Venta {
+  id          String   @id @default(uuid())
+  fechaVenta  DateTime @default(now())
+  totalVenta  Decimal  @db.Decimal(10, 2)
+  
+  metodoPago  MetodoPago @default(EFECTIVO)
+
+  detalles    DetalleVenta[]
+}
+
+// Detalle de qué se vendió
+model DetalleVenta {
+  id          String   @id @default(uuid())
+  
+  ventaId     String
+  venta       Venta    @relation(fields: [ventaId], references: [id])
+
+  productoId  String
+  producto    Producto @relation(fields: [productoId], references: [id])
+
+  cantidad    Int
+  precioVenta Decimal  @db.Decimal(10, 2) 
+}
+
+enum MetodoPago {
+  EFECTIVO
+}

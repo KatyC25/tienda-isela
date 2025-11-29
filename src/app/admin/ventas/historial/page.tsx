@@ -1,4 +1,6 @@
-import { prisma } from "@/lib/prisma";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -7,14 +9,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { requireAuth } from "@/lib/auth-utils";
+import { prisma } from "@/lib/prisma";
 import VentaDetalleDialog from "./VentaDetalleDialog";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 export default async function HistorialVentasPage() {
+  await requireAuth();
+
   const ventas = await prisma.venta.findMany({
     orderBy: { fechaVenta: "desc" },
     include: {

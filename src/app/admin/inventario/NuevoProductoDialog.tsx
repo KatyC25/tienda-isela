@@ -1,20 +1,20 @@
 "use client";
 
+import { Loader2, Plus } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+import { crearProducto } from "@/actions/productos-actions";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Plus, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
 } from "@/components/ui/dialog";
-import { toast } from "sonner";
-import { crearProducto } from "@/actions/productos-actions";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function NuevoProductoDialog() {
   const [open, setOpen] = useState(false);
@@ -26,7 +26,7 @@ export default function NuevoProductoDialog() {
       await crearProducto(formData);
       toast.success("Producto creado exitosamente");
       setOpen(false);
-    } catch (error) {
+    } catch (_error) {
       toast.error("Error al crear producto");
     } finally {
       setLoading(false);

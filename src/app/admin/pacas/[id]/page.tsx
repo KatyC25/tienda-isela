@@ -1,4 +1,5 @@
-import { prisma } from "@/lib/prisma";
+import { ArrowLeft, PackagePlus, Tag } from "lucide-react";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,8 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Link from "next/link";
-import { ArrowLeft, PackagePlus, Tag } from "lucide-react";
+import { requireAuth } from "@/lib/auth-utils";
+import { prisma } from "@/lib/prisma";
 import RegistrarIngreso from "./RegistrarIngreso";
 
 interface PageProps {
@@ -20,6 +21,8 @@ interface PageProps {
 }
 
 export default async function PacaDetallePage({ params }: PageProps) {
+  await requireAuth();
+
   const { id } = await params;
 
   const paca = await prisma.paca.findUnique({

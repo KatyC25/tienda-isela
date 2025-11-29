@@ -1,7 +1,8 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { requireAuth } from "@/lib/auth-utils";
+import { prisma } from "@/lib/prisma";
 
 type ItemVenta = {
   productoId: string;
@@ -10,6 +11,8 @@ type ItemVenta = {
 };
 
 export async function registrarVenta(items: ItemVenta[], total: number) {
+  await requireAuth();
+
   if (items.length === 0) throw new Error("El carrito está vacío");
 
   await prisma.$transaction(async (tx) => {

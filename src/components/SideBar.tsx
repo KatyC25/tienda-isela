@@ -2,16 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  MdDashboard,
-  MdPointOfSale,
-  MdAnalytics,
-  MdLogout,
-  MdDiscount,
-} from "react-icons/md";
 import { FaBoxOpen, FaTshirt } from "react-icons/fa";
+import {
+  MdAnalytics,
+  MdDashboard,
+  MdDiscount,
+  MdLogout,
+  MdPointOfSale,
+} from "react-icons/md";
+import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
-import { logoutAction } from "@/actions/auth-actions";
 
 const menuItems = [
   { href: "/admin", label: "Dashboard", icon: MdDashboard },
@@ -96,7 +96,7 @@ export default function Sidebar({
       <div className="p-2 border-t border-slate-800">
         <button
           type="button"
-          onClick={() => logoutAction()}
+          onClick={() => authClient.signOut()}
           className={cn(
             "flex items-center gap-4 px-3 py-3 w-full text-slate-400 hover:bg-red-900/20 hover:text-red-400 rounded-xl transition-colors",
             !isMobile && isCollapsed ? "justify-center" : "",

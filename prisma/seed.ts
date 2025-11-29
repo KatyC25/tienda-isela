@@ -1,6 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import "dotenv/config";
+import { auth } from "@/lib/auth";
 
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 async function main() {
   console.log("🌱 Iniciando sembrado de datos (Seeding)...");
@@ -11,7 +12,29 @@ async function main() {
   await prisma.producto.deleteMany();
   await prisma.paca.deleteMany();
 
+  // Clean auth tables
+  await prisma.session.deleteMany();
+  await prisma.account.deleteMany();
+  await prisma.verification.deleteMany();
+  await prisma.user.deleteMany();
+
   console.log("🧹 Base de datos limpiada.");
+
+  // Create default admin user
+  try {
+    await auth.api.signUpEmail({
+      body: {
+        email: "admin@tiendaisela.com",
+        password: "TiendaIsela2025!",
+        name: "Administrador Isela",
+      },
+    });
+    console.log(
+      "👤 Usuario administrador creado (admin@tiendaisela.com / TiendaIsela2025!)",
+    );
+  } catch (error) {
+    console.error("Error creando usuario admin:", error);
+  }
 
   const productos = await Promise.all([
     prisma.producto.create({

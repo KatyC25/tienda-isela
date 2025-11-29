@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -7,12 +7,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import { requireAuth } from "@/lib/auth-utils";
+import { prisma } from "@/lib/prisma";
 import NuevoProductoDialog from "./NuevoProductoDialog";
 
 export const dynamic = "force-dynamic";
 
 export default async function InventarioPage() {
+  await requireAuth();
+
   const productos = await prisma.producto.findMany({
     orderBy: { nombre: "asc" },
   });

@@ -1,11 +1,14 @@
-import { prisma } from "@/lib/prisma";
+import { DollarSign, Package, ShoppingBag } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, Package, ShoppingBag, TrendingUp } from "lucide-react";
+import { requireAuth } from "@/lib/auth-utils";
+import { prisma } from "@/lib/prisma";
 import DashboardCharts from "./DashboardCharts";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
+  await requireAuth();
+
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
 

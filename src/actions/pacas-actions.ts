@@ -1,12 +1,14 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
-import { pacaSchema } from "@/lib/schemas"; 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireAuth } from "@/lib/auth-utils";
+import { prisma } from "@/lib/prisma";
+import { pacaSchema } from "@/lib/schemas";
 
 export async function crearPaca(formData: FormData) {
-  
+  await requireAuth();
+
   const datosBrutos = {
     nombre: formData.get("nombre"),
     descripcion: formData.get("descripcion"),
@@ -25,8 +27,8 @@ export async function crearPaca(formData: FormData) {
     data: {
       nombre: resultado.data.nombre,
       descripcion: resultado.data.descripcion,
-      costoTotal: resultado.data.costo, 
-      fechaCompra: resultado.data.fecha, 
+      costoTotal: resultado.data.costo,
+      fechaCompra: resultado.data.fecha,
     },
   });
 

@@ -1,8 +1,9 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { requireAuth } from "@/lib/auth-utils";
+import { prisma } from "@/lib/prisma";
 
 const productoSchema = z.object({
   nombre: z.string().min(3, "El nombre es muy corto"),
@@ -10,6 +11,8 @@ const productoSchema = z.object({
 });
 
 export async function crearProducto(formData: FormData) {
+  await requireAuth();
+
   const data = {
     nombre: formData.get("nombre"),
     precio: formData.get("precio"),

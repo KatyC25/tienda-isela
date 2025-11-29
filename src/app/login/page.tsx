@@ -1,9 +1,11 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { FaTshirt } from "react-icons/fa";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -12,21 +14,40 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { FaTshirt } from "react-icons/fa";
-import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
-import { loginAction } from "@/actions/auth-actions";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { authClient } from "@/lib/auth-client";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setLoading(true);
 
-    const result = await loginAction(formData);
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
-    if (result?.error) {
-      toast.error(result.error);
+    try {
+      const { error } = await authClient.signIn.email({
+        email,
+        password,
+      });
+
+      if (error) {
+        toast.error(error.message || "Credenciales incorrectas");
+        setLoading(false);
+        return;
+      }
+
+      toast.success("¡Bienvenida!");
+      router.push("/admin");
+      router.refresh();
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("Error al iniciar sesión");
       setLoading(false);
     }
   }
@@ -46,14 +67,14 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Correo Electrónico</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="email"
+                placeholder="correo@ejemplo.com"
                 required
               />
             </div>

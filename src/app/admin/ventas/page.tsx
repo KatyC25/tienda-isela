@@ -1,12 +1,15 @@
-import { prisma } from "@/lib/prisma";
-import PuntoDeVenta from "./PuntoDeVenta";
+import { History } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { History } from "lucide-react";
+import { requireAuth } from "@/lib/auth-utils";
+import { prisma } from "@/lib/prisma";
+import PuntoDeVenta from "./PuntoDeVenta";
 
 export const dynamic = "force-dynamic";
 
 export default async function VentasPage() {
+  await requireAuth();
+
   const productosRaw = await prisma.producto.findMany({
     orderBy: { nombre: "asc" },
     select: {

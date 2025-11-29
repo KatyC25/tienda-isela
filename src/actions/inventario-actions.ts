@@ -1,9 +1,12 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { requireAuth } from "@/lib/auth-utils";
+import { prisma } from "@/lib/prisma";
 
 export async function registrarIngreso(formData: FormData) {
+  await requireAuth();
+
   const pacaId = formData.get("pacaId") as string;
   const productoId = formData.get("productoId") as string;
   const cantidad = Number(formData.get("cantidad"));

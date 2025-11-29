@@ -1,20 +1,20 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
-  Search,
-  ShoppingCart,
-  Trash2,
   Loader2,
   Minus,
   Plus,
+  Search,
+  ShoppingCart,
+  Trash2,
 } from "lucide-react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { registrarVenta } from "@/actions/ventas-actions";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 type Producto = {
   id: string;

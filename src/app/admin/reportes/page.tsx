@@ -1,4 +1,5 @@
-import { prisma } from "@/lib/prisma";
+import { AlertTriangle, TrendingUp } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -6,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import {
   Table,
   TableBody,
@@ -14,13 +16,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { AlertTriangle, TrendingUp } from "lucide-react";
+import { requireAuth } from "@/lib/auth-utils";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 export default async function ReportesPage() {
+  await requireAuth();
+
   const pacas = await prisma.paca.findMany({
     orderBy: { fechaCompra: "desc" },
     include: {

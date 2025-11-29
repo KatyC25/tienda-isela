@@ -1,92 +1,151 @@
 // prisma/schema.prisma
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/lib/generated"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // 1. EL CATÁLOGO (Tus productos definidos)
-// Aquí se acumula el stock total 
+// Aquí se acumula el stock total
+
 model Producto {
-  id          String   @id @default(uuid())
-  nombre      String   
+  id          String         @id @default(uuid())
+  nombre      String
   descripcion String?
-  
   // Precios
-  precioVenta Decimal  @db.Decimal(10, 2)
-  descuento   Int      @default(0)
-  
-  // Stock Global 
-  stock       Int      @default(0) 
-
-  // Relaciones
-  entradas    PrendaPaca[]   
-  salidas     DetalleVenta[] 
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  precioVenta Decimal        @db.Decimal(10, 2)
+  descuento   Int            @default(0)
+  // Stock Global
+  stock       Int            @default(0) // Relaciones
+  entradas    PrendaPaca[]
+  salidas     DetalleVenta[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 }
 
-// 2. LA PACA 
+// 2. LA PACA
+
 model Paca {
   id          String   @id @default(uuid())
-  nombre      String   
+  nombre      String
   descripcion String?
   costoTotal  Decimal  @db.Decimal(10, 2)
   fechaCompra DateTime @default(now())
 
-  contenido   PrendaPaca[]
+  contenido PrendaPaca[]
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 }
 
 // 3. TABLA INTERMEDIA (Ingreso de inventario)
-model PrendaPaca {
-  id          String   @id @default(uuid())
-  
-  // Relaciones
-  pacaId      String
-  paca        Paca     @relation(fields: [pacaId], references: [id])
 
-  productoId  String
-  producto    Producto @relation(fields: [productoId], references: [id])
+model PrendaPaca {
+  id     String @id @default(uuid())
+  // Relaciones
+  pacaId String
+  paca   Paca   @relation(fields: [pacaId], references: [id])
+
+  productoId String
+  producto   Producto @relation(fields: [productoId], references: [id])
 
   // Datos del ingreso
-  cantidad    Int      
-  costoUnitarioEstimado Decimal? @db.Decimal(10, 2) 
-
-  createdAt   DateTime @default(now())
+  cantidad              Int
+  costoUnitarioEstimado Decimal? @db.Decimal(10, 2)
+  createdAt             DateTime @default(now())
 }
 
 // 4. VENTAS (Salida de inventario)
-model Venta {
-  id          String   @id @default(uuid())
-  fechaVenta  DateTime @default(now())
-  totalVenta  Decimal  @db.Decimal(10, 2)
-  
-  metodoPago  MetodoPago @default(EFECTIVO)
 
-  detalles    DetalleVenta[]
+model Venta {
+  id         String     @id @default(uuid())
+  fechaVenta DateTime   @default(now())
+  totalVenta Decimal    @db.Decimal(10, 2)
+  metodoPago MetodoPago @default(EFECTIVO)
+
+  detalles DetalleVenta[]
 }
 
 // Detalle de qué se vendió
-model DetalleVenta {
-  id          String   @id @default(uuid())
-  
-  ventaId     String
-  venta       Venta    @relation(fields: [ventaId], references: [id])
 
-  productoId  String
-  producto    Producto @relation(fields: [productoId], references: [id])
+model DetalleVenta {
+  id      String @id @default(uuid())
+  ventaId String
+  venta   Venta  @relation(fields: [ventaId], references: [id])
+
+  productoId String
+  producto   Producto @relation(fields: [productoId], references: [id])
 
   cantidad    Int
-  precioVenta Decimal  @db.Decimal(10, 2) 
+  precioVenta Decimal @db.Decimal(10, 2)
 }
 
 enum MetodoPago {
   EFECTIVO
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }

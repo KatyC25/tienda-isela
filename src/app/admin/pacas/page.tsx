@@ -1,7 +1,7 @@
-import Link from "next/link";
-import { prisma } from "@/lib/prisma";
-import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -10,11 +10,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import { requireAuth } from "@/lib/auth-utils";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 export default async function PacasPage() {
+  await requireAuth();
+
   const pacas = await prisma.paca.findMany({
     orderBy: { createdAt: "desc" },
     include: {

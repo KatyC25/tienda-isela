@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FaBoxOpen, FaTshirt } from "react-icons/fa";
 import {
   MdAnalytics,
@@ -38,6 +38,7 @@ export default function Sidebar({
   onClose,
 }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <aside
@@ -96,9 +97,13 @@ export default function Sidebar({
       <div className="p-2 border-t border-slate-800">
         <button
           type="button"
-          onClick={() => authClient.signOut()}
+          onClick={() => {
+            authClient.signOut().then(() => {
+              router.replace("/login");
+            });
+          }}
           className={cn(
-            "flex items-center gap-4 px-3 py-3 w-full text-slate-400 hover:bg-red-900/20 hover:text-red-400 rounded-xl transition-colors",
+            "flex items-center gap-4 px-3 py-3 w-full text-slate-400 hover:bg-red-900/20 hover:text-red-400 rounded-xl transition-colors cursor-pointer",
             !isMobile && isCollapsed ? "justify-center" : "",
           )}
         >

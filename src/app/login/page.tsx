@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaTshirt } from "react-icons/fa";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -22,11 +22,18 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const { data } = authClient.useSession();
+  const { data, isPending } = authClient.useSession();
+  const mounted = useRef(false);
 
-  if (data?.session.userId) {
-    router.replace("/admin");
-  }
+  useEffect(() => {
+    if (isPending || !mounted.current) return;
+
+    if (data?.session.userId) {
+      router.replace("/admin");
+    }
+
+    mounted.current = true;
+  }, [data?.session, isPending, router]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

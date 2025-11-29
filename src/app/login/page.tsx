@@ -22,6 +22,12 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const { data } = authClient.useSession();
+
+  if (data?.session.userId) {
+    router.replace("/admin");
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);

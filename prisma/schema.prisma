@@ -18,6 +18,7 @@ model Producto {
   
   // Precios
   precioVenta Decimal  @db.Decimal(10, 2)
+  descuento   Int      @default(0)
   
   // Stock Global 
   stock       Int      @default(0) 
@@ -33,7 +34,8 @@ model Producto {
 // 2. LA PACA 
 model Paca {
   id          String   @id @default(uuid())
-  nombre      String   // Ej: "Paca Mixta Noviembre"
+  nombre      String   
+  descripcion String?
   costoTotal  Decimal  @db.Decimal(10, 2)
   fechaCompra DateTime @default(now())
 

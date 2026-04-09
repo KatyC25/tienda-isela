@@ -21,6 +21,7 @@ import { authClient } from "@/lib/auth-client";
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const currentYear = new Date().getFullYear();
 
   const { data, isPending } = authClient.useSession();
   const mounted = useRef(false);
@@ -120,7 +121,7 @@ export default function LoginPage() {
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-xs text-slate-500">
-            Sistema Administrativo Tienda Isela © 2025
+            Sistema Administrativo Tienda Isela © {currentYear}
           </p>
         </CardFooter>
       </Card>
